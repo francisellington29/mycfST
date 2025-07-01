@@ -31,4 +31,4 @@ jobs:
         context: .                     # 构建上下文
         platforms: linux/amd64,linux/arm64
         push: true                     # 自动推送
-        tags: francisellington29/cloudflareST:latest
+        tags: francisellington29/cloudflare:speed-test
