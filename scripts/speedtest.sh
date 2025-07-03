@@ -327,17 +327,6 @@ show_config_summary() {
         echo "  Telegram: 未启用"
     fi
     
-    if [[ "${NOTIFICATION_EMAIL_ENABLED:-false}" == "true" ]]; then
-        echo "  Email: 已启用"
-    else
-        echo "  Email: 未启用"
-    fi
-    
-    if [[ "${NOTIFICATION_WEBHOOK_ENABLED:-false}" == "true" ]]; then
-        echo "  Webhook: 已启用"
-    else
-        echo "  Webhook: 未启用"
-    fi
     echo ""
 }
 

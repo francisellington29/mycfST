@@ -203,52 +203,6 @@ send_telegram_notification() {
     fi
 }
 
-# 发送邮件通知
-send_email_notification() {
-    local message="$1"
-    
-    if [[ -z "${EMAIL_SMTP_SERVER:-}" ]] || [[ -z "${EMAIL_TO:-}" ]]; then
-        log_info "邮件通知未配置，跳过"
-        return 0
-    fi
-    
-    log_info "邮件通知功能待实现"
-    return 0
-}
-
-# 发送Webhook通知
-send_webhook_notification() {
-    local message="$1"
-    
-    if [[ -z "${WEBHOOK_URL:-}" ]]; then
-        log_info "Webhook通知未配置，跳过"
-        return 0
-    fi
-    
-    log_info "发送Webhook通知..."
-    
-    local json_payload=$(cat <<EOF
-{
-    "text": "$message",
-    "timestamp": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
-    "source": "CloudflareSpeedTest DDNS"
-}
-EOF
-)
-    
-    local response=$(curl -s -X POST \
-        -H "Content-Type: application/json" \
-        -d "$json_payload" \
-        "$WEBHOOK_URL")
-    
-    if [[ $? -eq 0 ]]; then
-        log_info "Webhook通知发送成功"
-        return 0
-    else
-        log_error "Webhook通知发送失败"
-        return 1
-    fi
-}
 
 # 写入本地日志
 write_notification_log() {
@@ -301,23 +255,7 @@ main() {
         if send_telegram_notification "$message"; then
             success_count=$((success_count + 1))
         fi
-    fi
-    
-    # 邮件通知
-    if [[ "${NOTIFICATION_EMAIL_ENABLED:-false}" == "true" ]]; then
-        total_count=$((total_count + 1))
-        if send_email_notification "$message"; then
-            success_count=$((success_count + 1))
-        fi
-    fi
-    
-    # Webhook通知
-    if [[ "${NOTIFICATION_WEBHOOK_ENABLED:-false}" == "true" ]]; then
-        total_count=$((total_count + 1))
-        if send_webhook_notification "$message"; then
-            success_count=$((success_count + 1))
-        fi
-    fi
+    fi   
     
     if [[ $total_count -eq 0 ]]; then
         log_info "未启用任何通知方式"
