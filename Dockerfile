@@ -1,37 +1,41 @@
-# 使用 Alpine Linux 作为基础镜像
 FROM alpine:3.20
+
+# 设置维护者信息
+LABEL maintainer="CloudflareSpeedTest DDNS v2.0"
+LABEL description="Modern DDNS automation tool based on CloudflareSpeedTest v2.3.0"
+
+# 安装依赖包
+RUN apk add --no-cache \
+    bash \
+    curl \
+    jq \
+    dcron \
+    tzdata \
+    ca-certificates \
+    wget \
+    tar \
+    bc
 
 # 设置工作目录
 WORKDIR /app
 
-# 安装必要的系统依赖
-RUN apk add --no-cache \
-    bash \
-    jq \
-    wget \
-    curl \
-    ca-certificates \
-    dcron \
-    && rm -rf /var/cache/apk/*
+# CloudflareSpeedTest将在运行时自动下载
 
-# 复制核心文件到容器
-COPY entrypoint.sh .
-COPY start.sh .
-COPY config.conf .
-COPY cf_ddns/ ./cf_ddns/
+# 复制入口脚本和配置
+COPY entrypoint.sh run.sh ./
+COPY scripts/ ./scripts/
+COPY config.conf ./
+RUN chmod +x *.sh scripts/*.sh
 
-# 确保脚本有执行权限
-RUN chmod +x entrypoint.sh && \
-    chmod +x start.sh && \
-    chmod +x cf_ddns/*.sh
+# 创建日志目录
+RUN mkdir -p logs
 
-# 设置环境变量
-ENV TZ=Asia/Shanghai \
-    LANG=C.UTF-8
+# 设置时区
+ENV TZ=Asia/Shanghai
 
-# 健康检查（检查cron服务和配置文件）
-HEALTHCHECK --interval=5m --timeout=10s --start-period=30s --retries=3 \
-    CMD sh -c "pgrep crond && test -f /app/config.conf" || exit 1
+# 健康检查
+HEALTHCHECK --interval=5m --timeout=10s --retries=3 \
+    CMD pgrep crond > /dev/null || exit 1
 
-
-CMD ["bash", "entrypoint.sh"]
+# 启动容器
+CMD ["./entrypoint.sh"]
