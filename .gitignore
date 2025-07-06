@@ -1,0 +1,39 @@
+# 结果文件
+result.csv
+cron.log
+*.log
+
+# 临时文件
+*.tmp
+*.temp
+.tmp/
+
+# 系统文件
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE 文件
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Docker 相关
+.docker/
+
+# 运行时下载的文件
+CloudflareST
+CloudflareST.exe
+qqwry.dat
+
+# 测试结果文件
+result*.csv
+
+# 环境变量文件 (如果包含敏感信息)
+.env
+
+# 备份文件
+*.bak
+*.backup

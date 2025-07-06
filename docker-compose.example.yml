@@ -1,0 +1,92 @@
+services:
+  cloudflare-speedtest:
+    build: .
+    container_name: cloudflare-speedtest
+    restart: unless-stopped
+
+    environment:
+      #=========== 基本配置 ===========
+      # 时区设置
+      - TZ=Asia/Shanghai
+      # 定时任务调度 (默认每5分钟执行一次)
+      - CRON_SCHEDULE=*/15 * * * *
+
+      #=========== 下载配置 ===========
+      # CloudflareST 版本 (默认v2.3.0)
+      - CLOUDFLARE_ST_VERSION=v2.3.0
+      # GitHub 代理URL (可选，用于加速下载)
+      - GITHUB_PROXY_URL=your_github_proxy_url_here
+      # 是否强制重新下载位置文件 (true/false，默认false)
+      - FORCE_REDOWNLOAD_LOCATION=false
+
+      #=========== SpeedTest 配置 ===========
+      # 延迟测速线程数 (默认200，最多1000)
+      - SPEEDTEST_THREADS=200
+      # 延迟测速次数 (默认4次)
+      - SPEEDTEST_LATENCY_TIMES=4
+      # 下载测速数量 (默认10个)
+      - SPEEDTEST_DOWNLOAD_NUM=3
+      # 下载测速时间 (默认10秒)
+      - SPEEDTEST_DOWNLOAD_TIME=10
+      # 测速端口 (默认443)
+      - SPEEDTEST_PORT=443
+      # 测速地址 (可选，建议自建)
+      - SPEEDTEST_URL=your_speedtest_download_url_here
+      # 测速模式 (默认tcping)
+      - SPEEDTEST_MODE=tcping
+      # 匹配指定地区 (机场代码，逗号分隔，如：HKG,KHH,NRT)
+      - SPEEDTEST_COLO=
+      # 平均延迟上限 (默认9999ms)
+      - SPEEDTEST_LATENCY_MAX=9999
+      # 平均延迟下限 (默认0ms)
+      - SPEEDTEST_LATENCY_MIN=0
+      # 丢包率上限 (默认1.00，范围0.00-1.00)
+      - SPEEDTEST_LOSS_RATE=1.00
+      # 下载速度下限 (默认0.00 MB/s)
+      - SPEEDTEST_SPEED_MIN=0.00
+      # 显示结果数量 (默认10个，0为不显示)
+      - SPEEDTEST_RESULT_NUM=10
+      # IP段数据文件路径 (默认ip.txt)
+      - SPEEDTEST_IP_FILE=ip.txt
+      # 指定IP段数据 (直接指定，逗号分隔)
+      - SPEEDTEST_IP_RANGE=
+      # 禁用下载测速 (默认false)
+      - SPEEDTEST_DISABLE_DOWNLOAD=false
+      # 测速全部IP (默认false，仅支持IPv4)
+      - SPEEDTEST_ALL_IP=false
+      # 调试模式 (默认false)
+      - SPEEDTEST_DEBUG=false
+
+      #=========== Cloudflare DNS 配置 ===========
+      # Cloudflare Zone ID
+      - CLOUDFLARE_DOMAIN=your_domain.com
+      - CLOUDFLARE_ZONE_ID=your_zone_id_here
+      - CLOUDFLARE_API_TOKEN=your_api_token_here
+      - CLOUDFLARE_DNS_COUNT=3
+
+      #=========== 通知配置 ===========
+      # 是否启用通知 (默认true)
+      - NOTIFICATION_ENABLE=true
+      # 通知平台 (默认telegram)
+      - NOTIFICATION_PLATFORM=telegram
+      # 是否在成功时发送通知 (默认true)
+      - NOTIFICATION_SUCCESS=true
+      # 是否在失败时发送通知 (默认true)
+      - NOTIFICATION_FAILURE=true
+
+      #=========== Telegram 机器人配置 ===========
+      - TELEGRAM_BOT_TOKEN=your_bot_token_here
+      - TELEGRAM_CHAT_ID=your_chat_id_here
+      - TELEGRAM_PROXY_URL=your_proxy_url_here
+
+    networks:
+      - cloudflare-net
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+networks:
+  cloudflare-net:
+    driver: bridge

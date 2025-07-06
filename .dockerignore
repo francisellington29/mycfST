@@ -1,0 +1,38 @@
+# Git相关
+.git
+.gitignore
+.gitattributes
+
+# 文档
+README.md
+*.md
+
+# 日志文件
+logs/
+*.log
+
+# 临时文件
+.tmp
+*.tmp
+*.temp
+
+# IDE文件
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# 系统文件
+.DS_Store
+Thumbs.db
+
+# Docker相关
+Dockerfile
+docker-compose.yml
+.dockerignore
+
+# 环境变量文件 (如果包含敏感信息)
+.env
+
+# Cloudflare Worker相关
+worker.js
